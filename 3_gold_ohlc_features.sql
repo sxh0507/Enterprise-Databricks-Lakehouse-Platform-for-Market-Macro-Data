@@ -3,7 +3,7 @@
 -- Source: enterprise.silver_market.crypto_ohlc_1m
 -- Target: enterprise.gold_market.ohlc_1m
 
-CREATE OR REPLACE TABLE enterprise.gold_market.ohlc_1m
+CREATE OR REPLACE TABLE enterprise.gold_market.ohlc_1d
 USING DELTA
 PARTITIONED BY (p_date)
 AS
@@ -20,7 +20,7 @@ WITH base AS (
     volume,
     p_date,
     ingestion_ts
-  FROM enterprise.silver_market.crypto_ohlc_1m
+  FROM enterprise.silver_market.crypto_ohlc_1d
 ),
 feat AS (
   SELECT
@@ -37,14 +37,14 @@ feat AS (
       WHEN LAG(close) OVER (PARTITION BY source, symbol ORDER BY bar_start_ts) IS NULL THEN NULL
       WHEN LAG(close) OVER (PARTITION BY source, symbol ORDER BY bar_start_ts) = 0 THEN NULL
       ELSE (close / LAG(close) OVER (PARTITION BY source, symbol ORDER BY bar_start_ts) - 1)
-    END AS ret_1m,
+    END AS ret_1d,
 
     -- log return
     CASE
       WHEN LAG(close) OVER (PARTITION BY source, symbol ORDER BY bar_start_ts) IS NULL THEN NULL
       WHEN LAG(close) OVER (PARTITION BY source, symbol ORDER BY bar_start_ts) <= 0 THEN NULL
       ELSE LN(close / LAG(close) OVER (PARTITION BY source, symbol ORDER BY bar_start_ts))
-    END AS log_ret_1m
+    END AS log_ret_1d
 
   FROM base
 ),
@@ -65,7 +65,7 @@ rolling AS (
     ) AS ma_close_60m,
 
     -- rolling volatility (stddev of log returns)
-    STDDEV_POP(log_ret_1m) OVER (
+    STDDEV_POP(log_ret_1d) OVER (
       PARTITION BY source, symbol
       ORDER BY bar_start_ts
       ROWS BETWEEN 59 PRECEDING AND CURRENT ROW
@@ -87,8 +87,8 @@ SELECT
   prev_close,
   candle_body,
   candle_range,
-  ret_1m,
-  log_ret_1m,
+  ret_1d,
+  log_ret_1d,
   ma_close_15m,
   ma_close_60m,
   vol_logret_60m,
