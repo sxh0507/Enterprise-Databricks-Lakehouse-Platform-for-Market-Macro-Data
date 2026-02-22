@@ -1,0 +1,65 @@
+bundle:
+  name: enterprise-market-macro-lakehouse
+
+workspace:
+  root_path: /Workspace/Users/xh.shi0507@gmail.com/.bundle/${bundle.name}
+
+resources:
+  jobs:
+
+    market_macro_pipeline:
+      name: market_macro_pipeline
+
+      tasks:
+
+        - task_key: setup_catalog
+          notebook_task:
+            notebook_path: 00_setup_catalog_schema.sql
+
+        - task_key: bronze_crypto
+          depends_on:
+            - task_key: setup_catalog
+          notebook_task:
+            notebook_path: 10_bronze_ingest_crypto.py
+
+        - task_key: bronze_ecb
+          depends_on:
+            - task_key: bronze_crypto
+          notebook_task:
+            notebook_path: 11_bronze_ingest_ecb_fx
+
+        - task_key: bronze_fred
+          depends_on:
+            - task_key: bronze_ecb
+          notebook_task:
+            notebook_path: 12_bronze_ingest_fred.py
+
+        - task_key: silver_crypto
+          depends_on:
+            - task_key: bronze_fred
+          notebook_task:
+            notebook_path: 20_silver_crypto_ohlc_parse.py
+
+        - task_key: silver_ref
+          depends_on:
+            - task_key: silver_crypto
+          notebook_task:
+            notebook_path: 22_silver_ref_parse.py
+
+        - task_key: gold_features
+          depends_on:
+            - task_key: silver_ref
+          notebook_task:
+            notebook_path: 30_gold_ohlc_features.sql
+
+        - task_key: gold_market_macro
+          depends_on:
+            - task_key: gold_features
+          notebook_task:
+            notebook_path: 33_gold_market_macro_daily.sql
+
+        - task_key: observability
+          depends_on:
+            - task_key: gold_market_macro
+          notebook_task:
+            notebook_path: 40_observability_metrics.py
