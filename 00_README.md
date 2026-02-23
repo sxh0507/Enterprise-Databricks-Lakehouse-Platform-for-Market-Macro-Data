@@ -290,23 +290,23 @@ Principle: analysts consume curated Silver/Gold only; Bronze remains restricted.
 ## Pipelines (current)
 
 ### 1) Bronze ingestion
-Notebook: `notebooks/10_bronze_ingest_crypto.py`  
+Notebook: `10_direct_bronze_market_crypto_ingest.ipynb`  
 - Parameterized ingestion (symbols, interval, date window)
 - `run_id` for audit/replay
 - stores **raw JSON as-is**
 
 ### 2) Silver transform
-Notebook: `notebooks/20_silver_crypto_ohlc_parse.py`  
+Notebook: `20_direct_silver_market_crypto_ohlc_transform.ipynb`  
 - Parses raw JSON into standardized schema
 - Applies data quality rules
 - Dedupes with MERGE (`source + symbol + bar_start_ts`)
 
 ### 3) Gold marts
-Notebook: `notebooks/30_gold_ohlc_features.sql`  
+Notebook: `30_direct_gold_market_ohlc_features_build.ipynb`  
 - Builds analytics-ready mart with feature engineering (rolling windows)
 
 ### 4) Observability
-Notebook: `notebooks/40_observability_metrics.py`  
+Notebook: `70_platform_observability_metrics_build.ipynb`  
 - Materializes freshness/quality/volume metrics into a dedicated table
 
 ---
@@ -314,23 +314,23 @@ Notebook: `notebooks/40_observability_metrics.py`
 ## How to run
 
 ### Step 0: Initialize catalog/schema/tables
-Run: `notebooks/00_setup_catalog_schema.sql`
+Run: `00_platform_setup_catalog_schema.ipynb`
 
 ### Step 1: Ingest to Bronze
-Run: `notebooks/10_bronze_ingest_crypto.py`  
+Run: `10_direct_bronze_market_crypto_ingest.ipynb`  
 Recommended first run:
 - `symbols=BTC-USD` *(or your Coinbase symbol format)*
 - `interval=1m`
 - `start_date/end_date` empty (default: today UTC)
 
 ### Step 2: Transform to Silver
-Run: `notebooks/20_silver_crypto_ohlc_parse.py`
+Run: `20_direct_silver_market_crypto_ohlc_transform.ipynb`
 
 ### Step 3: Build Gold marts
-Run: `notebooks/30_gold_ohlc_features.sql`
+Run: `30_direct_gold_market_ohlc_features_build.ipynb`
 
 ### Step 4: Compute observability metrics
-Run: `notebooks/40_observability_metrics.py`
+Run: `70_platform_observability_metrics_build.ipynb`
 
 > TODO: Add screenshots as evidence (Jobs DAG, tables in UC, sample queries).
 
