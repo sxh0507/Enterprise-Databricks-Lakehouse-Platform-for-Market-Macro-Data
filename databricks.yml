@@ -6,60 +6,58 @@ workspace:
 
 resources:
   jobs:
-
-    market_macro_pipeline:
-      name: market_macro_pipeline
+    direct_market_macro_pipeline:
+      name: direct_market_macro_pipeline
 
       tasks:
-
-        - task_key: setup_catalog
+        - task_key: platform_setup_catalog_schema
           notebook_task:
-            notebook_path: 00_setup_catalog_schema.sql
+            notebook_path: 00_platform_setup_catalog_schema.ipynb
 
-        - task_key: bronze_crypto
+        - task_key: direct_bronze_market_crypto_ingest
           depends_on:
-            - task_key: setup_catalog
+            - task_key: platform_setup_catalog_schema
           notebook_task:
-            notebook_path: 10_bronze_ingest_crypto.py
+            notebook_path: 10_direct_bronze_market_crypto_ingest.ipynb
 
-        - task_key: bronze_ecb
+        - task_key: direct_bronze_ref_ecb_fx_ingest
           depends_on:
-            - task_key: bronze_crypto
+            - task_key: direct_bronze_market_crypto_ingest
           notebook_task:
-            notebook_path: 11_bronze_ingest_ecb_fx
+            notebook_path: 11_direct_bronze_ref_ecb_fx_ingest.ipynb
 
-        - task_key: bronze_fred
+        - task_key: direct_bronze_ref_fred_ingest
           depends_on:
-            - task_key: bronze_ecb
+            - task_key: direct_bronze_ref_ecb_fx_ingest
           notebook_task:
-            notebook_path: 12_bronze_ingest_fred.py
+            notebook_path: 12_direct_bronze_ref_fred_ingest.ipynb
 
-        - task_key: silver_crypto
+        - task_key: direct_silver_market_crypto_ohlc_transform
           depends_on:
-            - task_key: bronze_fred
+            - task_key: direct_bronze_ref_fred_ingest
           notebook_task:
-            notebook_path: 20_silver_crypto_ohlc_parse.py
+            notebook_path: 20_direct_silver_market_crypto_ohlc_transform.ipynb
 
-        - task_key: silver_ref
+        - task_key: direct_silver_ref_macro_transform
           depends_on:
-            - task_key: silver_crypto
+            - task_key: direct_silver_market_crypto_ohlc_transform
           notebook_task:
-            notebook_path: 22_silver_ref_parse.py
+            notebook_path: 22_direct_silver_ref_macro_transform.ipynb
 
-        - task_key: gold_features
+        - task_key: direct_gold_market_ohlc_features_build
           depends_on:
-            - task_key: silver_ref
+            - task_key: direct_silver_ref_macro_transform
           notebook_task:
-            notebook_path: 30_gold_ohlc_features.sql
+            notebook_path: 30_direct_gold_market_ohlc_features_build.ipynb
 
-        - task_key: gold_market_macro
+        - task_key: direct_gold_market_macro_daily_build
           depends_on:
-            - task_key: gold_features
+            - task_key: direct_gold_market_ohlc_features_build
           notebook_task:
-            notebook_path: 33_gold_market_macro_daily.sql
+            notebook_path: 32_direct_gold_market_macro_daily_build.ipynb
 
-        - task_key: observability
+        - task_key: platform_observability_metrics_build
           depends_on:
-            - task_key: gold_market_macro
+            - task_key: direct_gold_market_macro_daily_build
           notebook_task:
-            notebook_path: 40_observability_metrics.py
+            notebook_path: 70_platform_observability_metrics_build.ipynb
