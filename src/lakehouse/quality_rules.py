@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Dict, Iterable, List, Sequence, Tuple, Any
+from typing import Any, Dict, Iterable, List, Sequence, Tuple
 
 
 def is_valid_ohlc(row: Dict[str, Any]) -> bool:
@@ -10,17 +10,17 @@ def is_valid_ohlc(row: Dict[str, Any]) -> bool:
 
     o = float(row["open"])
     h = float(row["high"])
-    l = float(row["low"])
+    low = float(row["low"])
     c = float(row["close"])
     v = float(row.get("volume", 0.0))
 
-    if o <= 0 or h <= 0 or l <= 0 or c <= 0:
+    if o <= 0 or h <= 0 or low <= 0 or c <= 0:
         return False
     if v < 0:
         return False
     if h < max(o, c):
         return False
-    if l > min(o, c):
+    if low > min(o, c):
         return False
     return True
 

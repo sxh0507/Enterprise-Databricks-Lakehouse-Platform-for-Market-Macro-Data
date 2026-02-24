@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from lakehouse.quality_rules import is_valid_ohlc, dedupe_latest
+from lakehouse.quality_rules import dedupe_latest, is_valid_ohlc
 
 
 def test_is_valid_ohlc_true():
@@ -32,6 +32,10 @@ def test_dedupe_latest_keeps_latest_ts():
         {"source": "cb", "symbol": "BTC", "bar_start_ts": 1, "ingestion_ts": 10, "close": 100},
         {"source": "cb", "symbol": "BTC", "bar_start_ts": 1, "ingestion_ts": 20, "close": 101},
     ]
-    out = dedupe_latest(rows, key_fields=["source", "symbol", "bar_start_ts"], ts_field="ingestion_ts")
+    out = dedupe_latest(
+        rows,
+        key_fields=["source", "symbol", "bar_start_ts"],
+        ts_field="ingestion_ts",
+    )
     assert len(out) == 1
     assert out[0]["close"] == 101

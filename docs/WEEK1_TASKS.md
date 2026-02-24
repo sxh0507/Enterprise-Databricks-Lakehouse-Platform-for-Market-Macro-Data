@@ -1,27 +1,36 @@
 # Week 1 Tasks (Refactor + Test + Basic CI)
 
 ## Day 1
-- Restructure folders
-- Archive duplicate scripts
-- Rename FRED file
-- Create active pipeline docs
+- [x] Restructure folders
+- [x] Archive duplicate scripts
+- [x] Rename FRED file
+- [x] Create active pipeline docs
 
 ## Day 2
-- Remove hard-coded table names
-- Fix obvious runtime bugs
-- Record known issues
+- [x] Remove hard-coded table names
+- [x] Fix obvious runtime bugs
+- [x] Record known issues
 
 ## Day 3
-- Extract pure logic to src/lakehouse
+- [x] Extract pure logic to `src/lakehouse`
+- [x] Integrate extracted modules into key direct notebooks (partial)
 
 ## Day 4
-- Add unit tests for parser/quality/observability
+- [x] Add unit tests for parser/quality/observability
+- [x] Local test baseline: `7 passed`
 
 ## Day 5
-- Add ruff + pytest + pre-commit + CI
+- [x] Add `pytest` CI workflow
+- [x] Add `ruff` config
+- [x] Add `.pre-commit-config.yaml`
+- [x] CI upgraded to run lint + unit tests
 
 ## Day 6
-- Regression run for Bronze/Silver/Gold/Observability
+- [ ] Regression run for Bronze/Silver/Gold/Observability
+- [ ] Fill final run status + task duration in `docs/WEEK1_REGRESSION_EVIDENCE.md`
+- [ ] Add SQL validation outputs for Bronze/Silver/Gold/Obs tables
 
 ## Day 7
-- Changelog + evidence mapping for JD
+- [ ] Final changelog for Week1
+- [ ] Freeze JD evidence mapping (`docs/WEEK1_JD_MAPPING.md`)
+- [ ] Prepare interview-ready STAR summary (CN + EN)

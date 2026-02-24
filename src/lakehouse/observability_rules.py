@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from typing import Dict, Iterable, Sequence, Any
+from typing import Any, Dict, Iterable, Sequence
 
 
 def freshness_minutes(max_ts: datetime | None, now_utc: datetime | None = None) -> float:

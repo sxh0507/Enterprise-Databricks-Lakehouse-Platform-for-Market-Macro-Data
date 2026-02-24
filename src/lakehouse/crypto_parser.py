@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
-from typing import Dict, List, Sequence, Any
-
+from typing import Any, Dict, List, Sequence
 
 _INTERVAL_MAP = {
     "1m": timedelta(minutes=1),

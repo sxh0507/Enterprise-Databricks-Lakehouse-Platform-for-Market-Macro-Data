@@ -6,10 +6,10 @@
 > Week3 Workflows+Terraform最小集  
 > Week4 监控仪表盘+投递材料+模拟面试
 
-更新时间：2026-02-23
+更新时间：2026-02-24
 
 ## 总体状态
-- Week1：进行中（约 75%-85%）
+- Week1：进行中（约 85%-90%）
 - Week2：未开始
 - Week3：未开始
 - Week4：部分准备（已有 dashboard 基础），其余未开始
@@ -31,7 +31,6 @@
 - [ ] Day3.2 模块接入范围扩大（目前已在部分 notebook 接入，需补齐 direct 全链路）
 
 ### 未完成
-- [ ] 基础 CI（GitHub Actions：pytest + lint）  
 - [ ] Day6 全链路回归（Bronze -> Silver -> Gold -> Observability）证据沉淀  
 - [ ] Day7 变更日志与“JD能力映射表”固化
 
@@ -88,7 +87,7 @@
 
 ### 待补齐（优先）
 - Azure 生产化能力（存储、身份、secret、网络最小认知）
-- CI/CD 标准化（actions、lint、test gate）
+- CI/CD 仍需扩展（当前已有 pytest+ruff，待补 pre-commit gate）
 - IaC（Terraform 最小可复现）
 - 生产运行能力证据（告警、回滚、成本优化）
 
@@ -98,4 +97,3 @@
 1. 先补 Week1 未完成项：CI + 全链路回归证据 + JD映射文档。
 2. 然后切入 Week2：先做 Secrets，再做 Azure 数据链路。
 3. 每完成一项必须有“可展示证据”（命令、截图、run URL、结果表）。
-

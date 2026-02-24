@@ -1,10 +1,10 @@
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 
 from lakehouse.observability_rules import (
-    freshness_minutes,
-    status_from_freshness,
-    null_rate,
     duplicate_rate,
+    freshness_minutes,
+    null_rate,
+    status_from_freshness,
 )
 
 
