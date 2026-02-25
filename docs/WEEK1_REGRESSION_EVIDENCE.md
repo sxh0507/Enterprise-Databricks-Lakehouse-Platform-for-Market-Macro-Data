@@ -1,4 +1,4 @@
-# Week1 回归证据（2026-02-25 实测版）
+# Week1 回归证据（最终 PASS 版）
 
 ## A. 执行信息
 - 日期：2026-02-25
@@ -57,24 +57,25 @@
 | `null_rate_eurusd_rate` on `enterprise.gold_market.market_macro_daily` (legacy) | 0.9704261325 | FAIL（历史旧链路） |
 | `missing_day_ratio` on `enterprise.gold_market.market_macro_daily` (legacy) | 0.9715909091（3762/3872） | FAIL（历史旧链路） |
 
-### B5. Observability 最新分区摘要
+### B5. Observability 最新分区摘要（重跑后）
 | status | cnt |
 |---|---:|
-| FAIL | 2 |
-| OK | 4 |
+| OK | 6 |
 
-## C. 结果解读（当前版本）
-- 主链路数据质量已达标：`gold_ref.market_macro_daily` 已可用，目标表空值与缺失交易日均为 0。
-- legacy 表仍高缺失（约 97%）是预期现象，不作为主链路失败依据。
-- 当前剩余问题只在 observability freshness 判定口径：
-  - `enterprise.bronze_market.crypto_ohlc_raw` 应使用 `ingestion_ts`。
-  - `enterprise.gold_ref.market_macro_daily` 应使用 `mart_ts`。
+## C. 结果解读（最终）
+- 主链路 `enterprise.gold_ref.market_macro_daily` 已完成物化，且目标口径质量检查全部 PASS。
+- `70_platform_observability_metrics_build.ipynb` 的 freshness 时间列口径修复后，Observability 从历史 FAIL 状态收敛为全量 OK。
+- legacy 表 (`enterprise.gold_market.market_macro_daily`) 的高缺失仅作为历史对照，不影响当前主链路回归门禁结论。
 
-## D. 已完成修复与下一步
-- 已修复：`70_platform_observability_metrics_build.ipynb`
-  - `event_ts_col`: `event_time` -> `ingestion_ts`
-  - `event_ts_col`: `trade_date` -> `mart_ts`
-- 下一步：
-  1. 重跑 `direct_market_macro_pipeline`（刷新 70 的最新指标分区）。
-  2. 复跑 `96_validation_day6_regression_checks.ipynb`。
-  3. 若 B5 变为全 `OK`，将 Week1 回归门禁标记为 PASS。
+## D. Week1 回归门禁结论
+- **Week1 Regression Gate：PASS**
+- 判定依据：
+  1. 主链路目标表存在性与行数检查通过。
+  2. 关键质量规则（重复、OHLC 合法性、宏观字段空值率、交易日覆盖）通过。
+  3. Observability 最新分区汇总为 `OK=6`。
+
+## E. 本次关键修复记录
+- 文件：`70_platform_observability_metrics_build.ipynb`
+  - `enterprise.bronze_market.crypto_ohlc_raw` freshness 列：`event_time` -> `ingestion_ts`
+  - `enterprise.gold_ref.market_macro_daily` freshness 列：`trade_date` -> `mart_ts`
+- 修复效果：消除 freshness 结构性误报，指标结果与真实更新节奏一致。
