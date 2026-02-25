@@ -4,6 +4,7 @@
 - Direct pipeline 使用 `1d` 粒度。
 - 宏观融合目标表使用：`enterprise.gold_ref.market_macro_daily`。
 - Observability 表：`enterprise.gold_observability.pipeline_metrics_daily`。
+- 建议执行载体：`96_validation_day6_regression_checks.dbquery.ipynb`（手工回归校验，不并入生产主链路）。
 
 ## A. 结构与存在性检查
 
@@ -183,4 +184,3 @@ ORDER BY status DESC, table_name;
 - Day6 Regression Gate: PASS / FAIL
 - 是否进入 Day7: YES / NO
 ```
-
