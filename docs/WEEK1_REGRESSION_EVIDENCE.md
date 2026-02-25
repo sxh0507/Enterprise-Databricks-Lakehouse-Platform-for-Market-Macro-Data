@@ -53,9 +53,9 @@
 | 层级 | 表名 | 校验SQL | 当前状态 |
 |---|---|---|---|
 | Bronze | `enterprise.bronze_market.crypto_ohlc_raw` | `SELECT COUNT(*) FROM ...` | 待补 |
-| Silver | `enterprise.silver_market.crypto_ohlc` | `SELECT COUNT(*) FROM ...` | 待补 |
-| Gold | `enterprise.gold_market.market_macro_daily` | `SELECT COUNT(*) FROM ...` | 待补 |
-| Obs | `enterprise.gold_observability.pipeline_health` | `SELECT COUNT(*) FROM ...` | 待补 |
+| Silver | `enterprise.silver_market.crypto_ohlc_1d` | `SELECT COUNT(*) FROM ...` | 待补 |
+| Gold | `enterprise.gold_ref.market_macro_daily` | `SELECT COUNT(*) FROM ...` | 待补 |
+| Obs | `enterprise.gold_observability.pipeline_metrics_daily` | `SELECT COUNT(*) FROM ...` | 待补 |
 
 ## G. 已识别问题与处理
 | 问题 | 影响 | 修复动作 | 关联提交 |
