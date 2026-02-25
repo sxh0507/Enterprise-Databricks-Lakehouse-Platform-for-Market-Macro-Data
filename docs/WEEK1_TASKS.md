@@ -26,11 +26,11 @@
 - [x] CI upgraded to run lint + unit tests
 
 ## Day 6
-- [ ] Regression run for Bronze/Silver/Gold/Observability
-- [ ] Fill final run status + task duration in `docs/WEEK1_REGRESSION_EVIDENCE.md`
-- [ ] Add SQL validation outputs for Bronze/Silver/Gold/Obs tables
+- [x] Regression run for Bronze/Silver/Gold/Observability
+- [x] Fill final run status + task duration in `docs/WEEK1_REGRESSION_EVIDENCE.md`
+- [x] Add SQL validation outputs for Bronze/Silver/Gold/Obs tables
 
 ## Day 7
-- [ ] Final changelog for Week1
-- [ ] Freeze JD evidence mapping (`docs/WEEK1_JD_MAPPING.md`)
-- [ ] Prepare interview-ready STAR summary (CN + EN)
+- [x] Final changelog for Week1
+- [x] Freeze JD evidence mapping (`docs/WEEK1_JD_MAPPING.md`)
+- [x] Prepare interview-ready STAR summary (CN + EN)

@@ -1,7 +1,7 @@
 # Week1 能力与JD映射（当前真实进度版）
 
 面向岗位：Databricks / Cloud Data Engineer（含 Azure + Databricks 方向）
-更新时间：2026-02-24
+更新时间：2026-02-25（Week1 冻结版）
 
 ## 1) 候选人背景定位
 - 学术背景：理论物理博士 + 数学本科/硕士。
@@ -17,7 +17,7 @@
 | CI/CD 基础 | `.github/workflows/ci.yml`（`ruff + pytest`）+ `.pre-commit-config.yaml` | 已覆盖（基础） | 仍缺发布/部署门禁 | Week2/3 增加环境级 gate |
 | 命名规范/可维护性 | notebook 命名统一为 `direct_* / landing_* / platform_*` | 已覆盖 | 仍需长期约束机制 | 在 README 加命名规范与检查步骤 |
 | Job 编排与依赖管理 | `databricks.yml` 任务链（setup->bronze->silver->gold->obs） | 已覆盖（基础） | 缺失败重试/告警策略说明 | Week3 增强 workflows 策略 |
-| Observability | `70_platform_observability_metrics_build.ipynb` + 对应模块抽取 | 部分覆盖 | 监控指标与SLA阈值未固化 | Week4 完善 dashboard+阈值 |
+| Observability | `70_platform_observability_metrics_build.ipynb` + `96_validation_day6_regression_checks.ipynb` + 对应模块抽取 | 基本覆盖 | 仍需一次重跑确认 `FAIL->OK` | Week4 完善 dashboard+阈值 |
 | Azure 平台能力（存储/身份/安全） | 目前主要是 Databricks 侧 | 未开始 | Azure 证据不足 | Week2 补 Secrets + Azure 最小链路 |
 | Terraform / IaC | 当前未落地 Terraform 代码 | 未开始 | 无 IaC 证据 | Week3 落地最小 Terraform |
 
@@ -28,11 +28,10 @@
 - 建立单元测试基线，当前 `tests/unit` 通过（7 passed）。
 - 落地 GitHub Actions 最小 CI，具备持续验证入口。
 
-## 4) 当前最关键短板（按求职优先级）
+## 4) 当前最关键短板（按求职优先级，Week1 结束时）
 1. Azure 生产链路证据不足（Secrets、存储、权限、网络）。
 2. IaC 缺口（Terraform 未落地）。
-3. 监控与运维证据不完整（SLA、告警、失败处置、成本）。
-4. 回归证据还缺最终 run 状态与数据验收 SQL 输出。
+3. 监控与运维证据仍不足（SLA、告警闭环、失败处置、成本/SLO 历史趋势）。
 
 ## 5) Week2-Week4 面试导向补强路线
 1. Week2：补 Azure + Secrets 最小可运行闭环，并记录证据。
