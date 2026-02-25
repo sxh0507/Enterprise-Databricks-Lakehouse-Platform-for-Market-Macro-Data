@@ -1,5 +1,11 @@
 # WEEK1 Changelog
 
+## Archive Metadata
+- Archive status: `FINAL`
+- Week1 completion timestamp: `2026-02-26 00:33:37 CET`
+- Archive version: `week1-final-v1`
+- Gate result: `PASS` (see `docs/WEEK1_REGRESSION_EVIDENCE.md`)
+
 ## 时间范围
 - 2026-02-22 到 2026-02-25
 
@@ -48,3 +54,6 @@
 ## Week1 完成定义（DoD）
 - 命名、任务编排、测试、CI、回归证据、JD 映射、STAR 材料全部具备。
 - 剩余动作仅为一次重跑验证 observability 新口径。
+
+## Final Sign-off
+- Week1 已完成归档，工程基线进入 Week2（Azure + Secrets）阶段。

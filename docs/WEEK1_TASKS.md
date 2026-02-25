@@ -1,5 +1,11 @@
 # Week 1 Tasks (Refactor + Test + Basic CI)
 
+## Archive Metadata
+- Archive status: `FINAL`
+- Week1 completion timestamp: `2026-02-26 00:33:37 CET`
+- Archive version: `week1-final-v1`
+- Evidence anchor: `docs/WEEK1_REGRESSION_EVIDENCE.md` (Gate=PASS)
+
 ## Day 1
 - [x] Restructure folders
 - [x] Archive duplicate scripts
