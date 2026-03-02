@@ -1,7 +1,7 @@
-import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
-from typing import List, Dict, Any, Callable
+from typing import Any, Callable, Dict, List
+
 
 def fetch_pages_concurrently(
     symbols: List[str],

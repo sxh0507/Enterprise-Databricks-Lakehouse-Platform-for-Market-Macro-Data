@@ -1,6 +1,7 @@
 from pyspark.sql import DataFrame
 from pyspark.sql import functions as F
 
+
 def check_invalid_ohlc(df: DataFrame) -> int:
     """
     Check for invalid OHLC rules.
@@ -39,8 +40,10 @@ def check_macro_null_rates(df: DataFrame) -> dict:
         return {"total": 0, "eurusd_null_rate": 0.0, "fedfunds_null_rate": 0.0}
         
     res = df.select(
-        (F.sum(F.when(F.col("eurusd_rate").isNull(), 1).otherwise(0)) / total).alias("fx_null_rate"),
-        (F.sum(F.when(F.col("fedfunds").isNull(), 1).otherwise(0)) / total).alias("fed_null_rate")
+        (F.sum(F.when(F.col("eurusd_rate").isNull(), 1).otherwise(0)) / total)
+        .alias("fx_null_rate"),
+        (F.sum(F.when(F.col("fedfunds").isNull(), 1).otherwise(0)) / total)
+        .alias("fed_null_rate"),
     ).first()
     
     return {

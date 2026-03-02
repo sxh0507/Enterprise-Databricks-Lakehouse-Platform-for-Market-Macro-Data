@@ -2,6 +2,7 @@ from pyspark.sql import DataFrame
 from pyspark.sql import functions as F
 from pyspark.sql.window import Window
 
+
 def build_gold_market_macro_daily(
     mkt_df: DataFrame,
     fx_df: DataFrame,
@@ -47,15 +48,23 @@ def build_gold_market_macro_daily(
     # Step 4 & 5: Forward fill and apply TTL (Time-To-Live) safety bounds
     # We also keep track of the date the value was last observed to calculate the gap
     
-    filled = joined \
-        .withColumn("last_fx_date", 
-                    F.last(F.when(F.col("raw_fx").isNotNull(), F.col("trade_date")), ignorenulls=True).over(window_spec)) \
-        .withColumn("last_fed_date", 
-                    F.last(F.when(F.col("raw_fed").isNotNull(), F.col("trade_date")), ignorenulls=True).over(window_spec)) \
-        .withColumn("filled_fx", F.last("raw_fx", ignorenulls=True).over(window_spec)) \
-        .withColumn("filled_fed", F.last("raw_fed", ignorenulls=True).over(window_spec)) \
-        .withColumn("fx_gap_days", F.datediff(F.col("trade_date"), F.col("last_fx_date"))) \
+    filled = (
+        joined
+        .withColumn(
+            "last_fx_date",
+            F.last(F.when(F.col("raw_fx").isNotNull(), F.col("trade_date")), ignorenulls=True)
+            .over(window_spec),
+        )
+        .withColumn(
+            "last_fed_date",
+            F.last(F.when(F.col("raw_fed").isNotNull(), F.col("trade_date")), ignorenulls=True)
+            .over(window_spec),
+        )
+        .withColumn("filled_fx", F.last("raw_fx", ignorenulls=True).over(window_spec))
+        .withColumn("filled_fed", F.last("raw_fed", ignorenulls=True).over(window_spec))
+        .withColumn("fx_gap_days", F.datediff(F.col("trade_date"), F.col("last_fx_date")))
         .withColumn("fed_gap_days", F.datediff(F.col("trade_date"), F.col("last_fed_date")))
+    )
         
     # Apply TTL logic: If the gap is > max_fill_days, revert to NULL
     final_df = filled.select(
@@ -64,9 +73,13 @@ def build_gold_market_macro_daily(
         "trade_date",
         "close_px",
         "daily_volume",
-        F.when(F.col("fx_gap_days") <= max_fill_days, F.col("filled_fx")).otherwise(F.lit(None)).alias("eurusd_rate"),
-        F.when(F.col("fed_gap_days") <= max_fill_days, F.col("filled_fed")).otherwise(F.lit(None)).alias("fedfunds"),
-        F.current_timestamp().alias("mart_ts")
+        F.when(F.col("fx_gap_days") <= max_fill_days, F.col("filled_fx"))
+        .otherwise(F.lit(None))
+        .alias("eurusd_rate"),
+        F.when(F.col("fed_gap_days") <= max_fill_days, F.col("filled_fed"))
+        .otherwise(F.lit(None))
+        .alias("fedfunds"),
+        F.current_timestamp().alias("mart_ts"),
     )
     
     return final_df

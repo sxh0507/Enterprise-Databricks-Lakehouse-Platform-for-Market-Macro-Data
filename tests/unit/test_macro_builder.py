@@ -1,8 +1,10 @@
-import pytest
 from datetime import datetime, timedelta
-from pyspark.sql import SparkSession
-from pyspark.sql import Row
+
+import pytest
+from pyspark.sql import Row, SparkSession
+
 from lakehouse.transforms.macro_builder import build_gold_market_macro_daily
+
 
 @pytest.fixture(scope="session")
 def spark():

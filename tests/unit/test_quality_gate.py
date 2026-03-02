@@ -1,7 +1,8 @@
 import pytest
-from pyspark.sql import SparkSession
-from pyspark.sql import Row
-from lakehouse.quality_gate import check_invalid_ohlc, check_duplicate_bars, check_macro_null_rates
+from pyspark.sql import Row, SparkSession
+
+from lakehouse.quality_gate import check_duplicate_bars, check_invalid_ohlc, check_macro_null_rates
+
 
 @pytest.fixture(scope="session")
 def spark():
