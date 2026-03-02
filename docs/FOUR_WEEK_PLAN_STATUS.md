@@ -1,9 +1,9 @@
 # 4周激进版计划与完成度（面向 Databricks / Cloud Data Engineer JD）
 
-> 基准计划：  
-> Week1 重构+测试+基础CI  
-> Week2 Azure链路+Secrets  
-> Week3 Workflows+Terraform最小集  
+> 基准计划：
+> Week1 重构+测试+基础CI
+> Week2 Azure链路+Secrets
+> Week3 Workflows+Terraform最小集
 > Week4 监控仪表盘+投递材料+模拟面试
 
 更新时间：2026-02-24
@@ -31,7 +31,7 @@
 - [ ] Day3.2 模块接入范围扩大（目前已在部分 notebook 接入，需补齐 direct 全链路）
 
 ### 未完成
-- [ ] Day6 全链路回归（Bronze -> Silver -> Gold -> Observability）证据沉淀  
+- [ ] Day6 全链路回归（Bronze -> Silver -> Gold -> Observability）证据沉淀
 - [ ] Day7 变更日志与“JD能力映射表”固化
 
 ---

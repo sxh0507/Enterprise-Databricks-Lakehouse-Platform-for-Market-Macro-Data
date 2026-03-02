@@ -77,4 +77,3 @@
    - 扩展测试覆盖率；
    - 增加最小 CI（pytest + lint）。
 3. 进行一次完整 direct pipeline 回归并保留 run 证据（run URL + 截图 + 输出表）。
-

@@ -57,17 +57,17 @@ SELECT
   daily_volume,
   -- 汇率：周末没有数据，沿用周五的
   LAST_VALUE(raw_fx, TRUE) OVER (
-    PARTITION BY source, symbol 
-    ORDER BY trade_date 
+    PARTITION BY source, symbol
+    ORDER BY trade_date
     ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
   ) AS eurusd_rate,
-  
+
   -- 利率：DFF 虽然有周末数据，但加个填充逻辑作为双重保险 (Safety Net)
   LAST_VALUE(raw_fed, TRUE) OVER (
-    PARTITION BY source, symbol 
-    ORDER BY trade_date 
+    PARTITION BY source, symbol
+    ORDER BY trade_date
     ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
   ) AS fedfunds,
-  
+
   current_timestamp() AS mart_ts
 FROM joined_raw;

@@ -1,5 +1,5 @@
 # **Enterprise Databricks Lakehouse Platform for Market + Macro Data**
-# 
+#
 目标：构建可生产化的数据平台（治理/CI/CD/作业编排/可观测）
 
 - **Why this project (Job-aligned)**
@@ -191,7 +191,7 @@ while sharing common platform services such as observability and governance.
 # Enterprise Databricks Lakehouse Platform (Market + Macro Data)
 
 This project implements an **enterprise-style Databricks Lakehouse platform** focused on
-**governance, reproducibility, and observability**.  
+**governance, reproducibility, and observability**.
 It ingests crypto market data (Domain A) and is designed to integrate macro reference data
 (ECB/FRED, Domain B) to demonstrate a multi-domain, data-mesh inspired architecture.
 
@@ -223,7 +223,7 @@ Sources (Coinbase public API)
 
 **Domain B (Reference Data / ECB + FRED)** is planned next and will be integrated through Gold marts.
 
-> TODO: Add an architecture diagram image (recommended).  
+> TODO: Add an architecture diagram image (recommended).
 > Suggested path: `architecture/lakehouse_architecture.png`
 
 ---
@@ -270,19 +270,19 @@ Principle: analysts consume curated Silver/Gold only; Bronze remains restricted.
 ## Table overview (Domain A implemented)
 
 ### Bronze (raw, replayable)
-- `enterprise.bronze_market.crypto_ohlc_raw`  
+- `enterprise.bronze_market.crypto_ohlc_raw`
   Columns: `source, symbol, interval, event_time, raw_json, run_id, ingestion_ts`
 
 ### Silver (standardized + deduped)
-- `enterprise.silver_market.crypto_ohlc_1m`  
+- `enterprise.silver_market.crypto_ohlc_1m`
   Columns: `source, symbol, bar_start_ts, bar_end_ts, open, high, low, close, volume, ingestion_ts, p_date`
 
 ### Gold (analytics marts)
-- `enterprise.gold_market.ohlc_1m`  
+- `enterprise.gold_market.ohlc_1m`
   Adds features: returns, rolling MA, rolling volatility, etc.
 
 ### Observability (platform metrics)
-- `enterprise.gold_observability.pipeline_metrics_daily`  
+- `enterprise.gold_observability.pipeline_metrics_daily`
   Tracks: row count, freshness, null rate, duplicate rate, status
 
 ---
@@ -290,23 +290,23 @@ Principle: analysts consume curated Silver/Gold only; Bronze remains restricted.
 ## Pipelines (current)
 
 ### 1) Bronze ingestion
-Notebook: `10_direct_bronze_market_crypto_ingest.ipynb`  
+Notebook: `10_direct_bronze_market_crypto_ingest.ipynb`
 - Parameterized ingestion (symbols, interval, date window)
 - `run_id` for audit/replay
 - stores **raw JSON as-is**
 
 ### 2) Silver transform
-Notebook: `20_direct_silver_market_crypto_ohlc_transform.ipynb`  
+Notebook: `20_direct_silver_market_crypto_ohlc_transform.ipynb`
 - Parses raw JSON into standardized schema
 - Applies data quality rules
 - Dedupes with MERGE (`source + symbol + bar_start_ts`)
 
 ### 3) Gold marts
-Notebook: `30_direct_gold_market_ohlc_features_build.ipynb`  
+Notebook: `30_direct_gold_market_ohlc_features_build.ipynb`
 - Builds analytics-ready mart with feature engineering (rolling windows)
 
 ### 4) Observability
-Notebook: `70_platform_observability_metrics_build.ipynb`  
+Notebook: `70_platform_observability_metrics_build.ipynb`
 - Materializes freshness/quality/volume metrics into a dedicated table
 
 ---
@@ -317,7 +317,7 @@ Notebook: `70_platform_observability_metrics_build.ipynb`
 Run: `00_platform_setup_catalog_schema.ipynb`
 
 ### Step 1: Ingest to Bronze
-Run: `10_direct_bronze_market_crypto_ingest.ipynb`  
+Run: `10_direct_bronze_market_crypto_ingest.ipynb`
 Recommended first run:
 - `symbols=BTC-USD` *(or your Coinbase symbol format)*
 - `interval=1m`
@@ -338,10 +338,10 @@ Run: `70_platform_observability_metrics_build.ipynb`
 
 ## Key design decisions (Interview talking points)
 
-- **Auditability**: raw payloads + run_id + ingestion timestamp in Bronze  
-- **Stable contract**: Silver schema remains constant even if data source changes  
-- **Idempotence / dedupe**: MERGE into Silver using business keys  
-- **Observability**: pipeline health metrics are materialized as tables (not just logs)  
+- **Auditability**: raw payloads + run_id + ingestion timestamp in Bronze
+- **Stable contract**: Silver schema remains constant even if data source changes
+- **Idempotence / dedupe**: MERGE into Silver using business keys
+- **Observability**: pipeline health metrics are materialized as tables (not just logs)
 - **Scalability**: domain-based namespace supports onboarding new datasets and teams
 
 ---
@@ -350,11 +350,3 @@ Run: `70_platform_observability_metrics_build.ipynb`
 - Implement Domain B (ECB/FRED): Bronze → Silver → Gold integration
 - Add Databricks Jobs workflow (orchestrated DAG) and CI/CD (GitHub Actions + bundles/CLI)
 - Add data quality expectations & alerting thresholds
-
-
-
-
-
-
-
-

@@ -15,7 +15,6 @@ def test_parse_ecb_fx_xml_handles_single_quotes():
     assert {r["quote_ccy"] for r in out} == {"USD", "GBP"}
 
 
-
 def test_parse_fred_observations_filters_missing_values():
     raw = (
         '{"observations":['

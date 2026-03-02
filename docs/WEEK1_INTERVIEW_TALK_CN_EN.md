@@ -40,13 +40,13 @@
 - Day7：冻结文档（changelog、JD mapping、STAR），形成可投递证据包。
 
 ### 1.5 关键问题与修复（你可以重点讲这一段）
-- 问题1：历史命名混乱，任务路径与实际文件不一致。  
+- 问题1：历史命名混乱，任务路径与实际文件不一致。
   修复：统一 direct/landing/platform 命名，并更新 `databricks.yml`。
-- 问题2：逻辑全在 notebook，难测试。  
+- 问题2：逻辑全在 notebook，难测试。
   修复：抽模块到 `src/lakehouse` 并补单测。
-- 问题3：质量门禁缺失。  
+- 问题3：质量门禁缺失。
   修复：上线 CI（`ruff + pytest`），将本地规则自动化。
-- 问题4：observability 出现结构性误报。  
+- 问题4：observability 出现结构性误报。
   修复：在 `70_platform_observability_metrics_build.ipynb` 修正 freshness 时间列：
   - bronze: `event_time -> ingestion_ts`
   - gold_ref: `trade_date -> mart_ts`
@@ -74,9 +74,9 @@
 - 下一步（Week2-Week4）：Azure Secrets/存储最小闭环 -> Terraform 最小模板 -> 监控告警与面试证据包强化。
 
 ### 1.9 2 分钟中文口述稿
-我这个项目是一个 Databricks 的市场与宏观数据 Lakehouse。Week1 我做的核心不是加新功能，而是把项目从“能跑”升级到“可维护、可验证、可交付”。  
-具体来说，我先统一了命名和任务编排，修复了 `databricks.yml` 与 notebook 路径不一致的问题；然后把关键逻辑从 notebook 抽到 `src/lakehouse`，并补了单元测试；接着把 CI 建起来，用 `ruff + pytest` 做质量门禁。  
-在回归阶段，我新增了独立校验 notebook，从表存在性、行数、freshness、空值率、重复、覆盖率等维度做验证。期间最大的技术问题是 observability 的 freshness 列选错，导致结构性误报。我把 bronze 改成 `ingestion_ts`，gold_ref 改成 `mart_ts` 后，最终 observability 汇总变成 `OK=6`，Week1 回归门禁 PASS。  
+我这个项目是一个 Databricks 的市场与宏观数据 Lakehouse。Week1 我做的核心不是加新功能，而是把项目从“能跑”升级到“可维护、可验证、可交付”。
+具体来说，我先统一了命名和任务编排，修复了 `databricks.yml` 与 notebook 路径不一致的问题；然后把关键逻辑从 notebook 抽到 `src/lakehouse`，并补了单元测试；接着把 CI 建起来，用 `ruff + pytest` 做质量门禁。
+在回归阶段，我新增了独立校验 notebook，从表存在性、行数、freshness、空值率、重复、覆盖率等维度做验证。期间最大的技术问题是 observability 的 freshness 列选错，导致结构性误报。我把 bronze 改成 `ingestion_ts`，gold_ref 改成 `mart_ts` 后，最终 observability 汇总变成 `OK=6`，Week1 回归门禁 PASS。
 这周的结果是：项目具备了工程化基线，也形成了可面试讲解的证据链。下一步我会在 Week2/3 补齐 Azure 和 Terraform 的生产化能力。
 
 ## 2) English Version (Interview-ready)
@@ -108,13 +108,13 @@ This is a Databricks-based market + macro data lakehouse project. In Week1, I tr
 - Day7: froze deliverables (changelog, JD mapping, STAR) as interview evidence.
 
 ### 2.5 Key issues and fixes
-- Issue 1: inconsistent naming and bundle-path mismatch.  
+- Issue 1: inconsistent naming and bundle-path mismatch.
   Fix: unified notebook naming and aligned `databricks.yml`.
-- Issue 2: critical logic trapped in notebooks.  
+- Issue 2: critical logic trapped in notebooks.
   Fix: extracted reusable Python modules with unit tests.
-- Issue 3: no automated quality gate.  
+- Issue 3: no automated quality gate.
   Fix: enabled CI with lint + tests.
-- Issue 4: structural false-fail in observability freshness.  
+- Issue 4: structural false-fail in observability freshness.
   Fix in `70_platform_observability_metrics_build.ipynb`:
   - bronze freshness column: `event_time -> ingestion_ts`
   - gold_ref freshness column: `trade_date -> mart_ts`
@@ -139,10 +139,10 @@ This is a Databricks-based market + macro data lakehouse project. In Week1, I tr
 - Next (Week2-Week4): Azure minimal secure path -> Terraform minimal IaC -> observability/dashboard hardening.
 
 ### 2.9 2-minute English script
-In Week1, my goal was to convert a notebook-centric Databricks project into an engineering-ready data pipeline.  
-I started by standardizing naming and fixing bundle-to-notebook path consistency in `databricks.yml`. Then I extracted core logic from notebooks into reusable Python modules under `src/lakehouse`, and added unit tests to establish a stable baseline.  
-Next, I implemented CI with `ruff + pytest` and pre-commit checks, so quality validation became automated rather than manual. For regression, I introduced a dedicated SQL validation notebook that checks table existence, row counts, freshness, null rates, duplicate groups, and macro coverage.  
-The major issue was a false-fail in observability caused by wrong freshness timestamp columns. After correcting those mappings, the latest observability status became `OK=6`, and the Week1 regression gate passed.  
+In Week1, my goal was to convert a notebook-centric Databricks project into an engineering-ready data pipeline.
+I started by standardizing naming and fixing bundle-to-notebook path consistency in `databricks.yml`. Then I extracted core logic from notebooks into reusable Python modules under `src/lakehouse`, and added unit tests to establish a stable baseline.
+Next, I implemented CI with `ruff + pytest` and pre-commit checks, so quality validation became automated rather than manual. For regression, I introduced a dedicated SQL validation notebook that checks table existence, row counts, freshness, null rates, duplicate groups, and macro coverage.
+The major issue was a false-fail in observability caused by wrong freshness timestamp columns. After correcting those mappings, the latest observability status became `OK=6`, and the Week1 regression gate passed.
 This gives me a solid engineering baseline, and in the next phase I will extend this with Azure security and Terraform IaC evidence for production-level readiness.
 
 ## 3) Optional Interview Q&A (Quick)

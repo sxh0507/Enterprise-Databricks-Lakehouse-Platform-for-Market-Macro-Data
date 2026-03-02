@@ -29,7 +29,7 @@ def null_rate(rows: Iterable[Dict[str, Any]], cols: Sequence[str]) -> float:
     total_null_frac = 0.0
     for c in cols:
         null_count = sum(1 for r in rows if r.get(c) is None)
-        total_null_frac += (null_count / total)
+        total_null_frac += null_count / total
     return total_null_frac / len(cols) if cols else 0.0
 
 

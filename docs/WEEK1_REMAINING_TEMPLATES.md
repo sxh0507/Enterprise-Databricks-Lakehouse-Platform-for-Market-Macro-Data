@@ -151,4 +151,3 @@ jobs:
 ## 一句话电梯陈述（面试开场）
 “我把一个偏 notebook 形态的 Databricks 项目重构成了可部署、可测试、可追踪的工程化管道：统一了 direct/landing 命名，落地了 bundle job，抽出了 Python 模块并补齐单元测试，下一步是补 Azure 与 Terraform 的生产化证据。”
 ```
-

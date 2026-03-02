@@ -3,60 +3,84 @@ bundle:
 
 workspace:
   root_path: /Workspace/Users/xh.shi0507@gmail.com/.bundle/${bundle.name}
+  artifact_path: /Workspace/Users/xh.shi0507@gmail.com/.bundle/${bundle.name}/artifacts
+    
+artifacts:
+  default:
+    type: whl
+    build: python3 -m build
+    path: .
 
 resources:
   jobs:
     direct_market_macro_pipeline:
       name: direct_market_macro_pipeline
-
+      environments:
+        - environment_key: default
+          spec:
+            environment_version: "2"
+            dependencies:
+              - ${workspace.artifact_path}/.internal/lakehouse-0.1.0-py3-none-any.whl
+      
       tasks:
         - task_key: platform_setup_catalog_schema
+          environment_key: default
           notebook_task:
             notebook_path: 00_platform_setup_catalog_schema.ipynb
 
         - task_key: direct_bronze_market_crypto_ingest
+          environment_key: default
           depends_on:
             - task_key: platform_setup_catalog_schema
           notebook_task:
             notebook_path: 10_direct_bronze_market_crypto_ingest.ipynb
 
         - task_key: direct_bronze_ref_ecb_fx_ingest
+          environment_key: default
           depends_on:
-            - task_key: direct_bronze_market_crypto_ingest
+            - task_key: platform_setup_catalog_schema
           notebook_task:
             notebook_path: 11_direct_bronze_ref_ecb_fx_ingest.ipynb
 
         - task_key: direct_bronze_ref_fred_ingest
+          environment_key: default
           depends_on:
-            - task_key: direct_bronze_ref_ecb_fx_ingest
+            - task_key: platform_setup_catalog_schema
           notebook_task:
             notebook_path: 12_direct_bronze_ref_fred_ingest.ipynb
 
         - task_key: direct_silver_market_crypto_ohlc_transform
+          environment_key: default
           depends_on:
+            - task_key: direct_bronze_market_crypto_ingest
             - task_key: direct_bronze_ref_fred_ingest
+            - task_key: direct_bronze_ref_ecb_fx_ingest
           notebook_task:
             notebook_path: 20_direct_silver_market_crypto_ohlc_transform.ipynb
 
         - task_key: direct_silver_ref_macro_transform
+          environment_key: default
           depends_on:
             - task_key: direct_silver_market_crypto_ohlc_transform
           notebook_task:
             notebook_path: 22_direct_silver_ref_macro_transform.ipynb
 
         - task_key: direct_gold_market_ohlc_features_build
+          environment_key: default
           depends_on:
             - task_key: direct_silver_ref_macro_transform
           notebook_task:
             notebook_path: 30_direct_gold_market_ohlc_features_build.ipynb
 
         - task_key: direct_gold_market_macro_daily_build
+          environment_key: default
           depends_on:
             - task_key: direct_gold_market_ohlc_features_build
           notebook_task:
             notebook_path: 32_direct_gold_market_macro_daily_build.ipynb
 
         - task_key: platform_observability_metrics_build
+          environment_key: default
           depends_on:
             - task_key: direct_gold_market_macro_daily_build
           notebook_task:
