@@ -32,12 +32,10 @@ jobs:
           python3 -m ruff check src/ tests/
           python3 -m ruff format --check src/ tests/
 
-      # PySpark tests (test_quality_gate, test_macro_builder) require Java/Spark and run on Databricks.
-      # CI only runs pure-Python unit tests that don't depend on PySpark.
+      # Tests marked @pytest.mark.spark require PySpark/Java and run on Databricks, not in CI.
+      # To run spark tests locally: pip install -e ".[spark]" && pytest -m spark
       - name: Run Pure-Python Unit Tests
         env:
           PYTHONPATH: src
         run: |
-          python3 -m pytest tests/unit/ -v \
-            --ignore=tests/unit/test_quality_gate.py \
-            --ignore=tests/unit/test_macro_builder.py
+          python3 -m pytest tests/unit/ -v -m "not spark"

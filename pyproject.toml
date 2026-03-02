@@ -9,11 +9,15 @@ description = "Enterprise Databricks Lakehouse Platform"
 requires-python = ">=3.10"
 dependencies = [
     "requests",
-    "pyspark>=3.3.0"
+    # pyspark is intentionally NOT listed here:
+    # - Databricks Runtime already bundles PySpark (version conflicts if reinstalled)
+    # - CI only runs pure-Python unit tests, so pyspark is not needed there either
 ]
 
 [project.optional-dependencies]
 dev = ["pytest", "pre-commit", "ruff", "mypy"]
+# Use 'pip install -e ".[spark]"' to run PySpark tests locally
+spark = ["pyspark>=3.3.0"]
 
 [tool.ruff]
 line-length = 100

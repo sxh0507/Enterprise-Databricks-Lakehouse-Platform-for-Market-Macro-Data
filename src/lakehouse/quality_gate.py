@@ -6,8 +6,9 @@ def check_invalid_ohlc(df: DataFrame) -> int:
     """
     Check for invalid OHLC rules.
     Returns the count of invalid records.
-    Rule:
+    Rules (kept in sync with quality_rules.py:is_valid_ohlc):
     - price items > 0
+    - volume >= 0
     - high >= max(open, close)
     - low <= min(open, close)
     """
@@ -16,6 +17,7 @@ def check_invalid_ohlc(df: DataFrame) -> int:
         | (F.col("high") <= 0)
         | (F.col("low") <= 0)
         | (F.col("close") <= 0)
+        | (F.col("volume") < 0)
         | (F.col("high") < F.greatest(F.col("open"), F.col("close")))
         | (F.col("low") > F.least(F.col("open"), F.col("close")))
     )

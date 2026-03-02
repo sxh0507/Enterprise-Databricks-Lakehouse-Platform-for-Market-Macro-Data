@@ -1,14 +1,14 @@
 from datetime import datetime, timedelta
 
 import pytest
-from pyspark.sql import Row, SparkSession
+from pyspark.sql import Row
 
 from lakehouse.transforms.macro_builder import build_gold_market_macro_daily
 
-
-@pytest.fixture(scope="session")
-def spark():
-    return SparkSession.builder.appName("test-macro-builder").master("local[1]").getOrCreate()
+# All tests in this file require a live SparkSession.
+# CI skips them via `pytest -m "not spark"`.
+# Run locally with: pip install -e ".[spark]" && pytest -m spark
+pytestmark = pytest.mark.spark
 
 
 def test_macro_builder_forward_fill_ttl(spark):

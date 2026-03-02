@@ -15,16 +15,18 @@ resources:
   jobs:
     direct_market_macro_pipeline:
       name: direct_market_macro_pipeline
+      # NOTE: WHL is installed via %pip install inside each notebook (cell 0).
+      # Serverless environment_key removed from 00_setup (pure DDL SQL, needs no WHL).
       environments:
         - environment_key: default
           spec:
             environment_version: "2"
-            dependencies:
-              - /Workspace/Users/xh.shi0507@gmail.com/.bundle/enterprise-market-macro-lakehouse/artifacts/.internal/lakehouse-0.1.0-py3-none-any.whl
+            # No hardcoded WHL dependency here to avoid version/path drift.
+            # Each notebook installs the WHL via %pip install at runtime (see cell 0).
       
       tasks:
         - task_key: platform_setup_catalog_schema
-          environment_key: default
+          # No environment_key: this is pure DDL SQL, no Python/WHL needed.
           notebook_task:
             notebook_path: 00_platform_setup_catalog_schema.ipynb
 
