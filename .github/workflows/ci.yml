@@ -32,7 +32,7 @@ jobs:
           python3 -m pip install --upgrade pip
           python3 -m pip install -e ".[dev]"
 
-      # Ruff checks src/ and tests/ only -- Notebooks are excluded to avoid %sql magic syntax errors
+      # Ruff checks src/ and tests/ only -- Notebooks excluded to avoid %sql magic syntax errors
       - name: Run Ruff Linter (src & tests only)
         run: |
           python3 -m ruff check src/ tests/
@@ -41,5 +41,11 @@ jobs:
       - name: Run Pytest Unit Tests
         env:
           PYTHONPATH: src
+          # setup-java exports JAVA_HOME to $GITHUB_ENV; forward it explicitly so PySpark JVM starts
+          JAVA_HOME: ${{ env.JAVA_HOME }}
+          PYSPARK_PYTHON: python3
+          PYSPARK_DRIVER_PYTHON: python3
+          PYSPARK_SUBMIT_ARGS: "--master local[1] pyspark-shell"
         run: |
+          java -version
           python3 -m pytest tests/unit/ -v
