@@ -1,5 +1,9 @@
 import pytest
-from pyspark.sql import Row
+
+try:
+    from pyspark.sql import Row
+except ModuleNotFoundError:
+    pytest.skip("pyspark not installed in this environment", allow_module_level=True)
 
 from lakehouse.quality_gate import check_duplicate_bars, check_invalid_ohlc, check_macro_null_rates
 

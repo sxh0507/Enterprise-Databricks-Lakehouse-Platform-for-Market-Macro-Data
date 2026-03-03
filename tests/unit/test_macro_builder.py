@@ -1,7 +1,11 @@
 from datetime import datetime, timedelta
 
 import pytest
-from pyspark.sql import Row
+
+try:
+    from pyspark.sql import Row
+except ModuleNotFoundError:
+    pytest.skip("pyspark not installed in this environment", allow_module_level=True)
 
 from lakehouse.transforms.macro_builder import build_gold_market_macro_daily
 
