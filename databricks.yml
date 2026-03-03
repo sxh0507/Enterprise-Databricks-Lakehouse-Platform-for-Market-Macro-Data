@@ -52,22 +52,21 @@ resources:
           environment_key: default
           depends_on:
             - task_key: direct_bronze_market_crypto_ingest
-            - task_key: direct_bronze_ref_fred_ingest
-            - task_key: direct_bronze_ref_ecb_fx_ingest
           notebook_task:
             notebook_path: 20_direct_silver_market_crypto_ohlc_transform.ipynb
 
         - task_key: direct_silver_ref_macro_transform
           environment_key: default
           depends_on:
-            - task_key: direct_silver_market_crypto_ohlc_transform
+            - task_key: direct_bronze_ref_ecb_fx_ingest
+            - task_key: direct_bronze_ref_fred_ingest
           notebook_task:
             notebook_path: 22_direct_silver_ref_macro_transform.ipynb
 
         - task_key: direct_gold_market_ohlc_features_build
           environment_key: default
           depends_on:
-            - task_key: direct_silver_ref_macro_transform
+            - task_key: direct_silver_market_crypto_ohlc_transform
           notebook_task:
             notebook_path: 30_direct_gold_market_ohlc_features_build.ipynb
 
@@ -75,6 +74,7 @@ resources:
           environment_key: default
           depends_on:
             - task_key: direct_gold_market_ohlc_features_build
+            - task_key: direct_silver_ref_macro_transform
           notebook_task:
             notebook_path: 32_direct_gold_market_macro_daily_build.ipynb
 
