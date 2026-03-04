@@ -1,6 +1,51 @@
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from typing import Any, Callable, Dict, List
+
+
+def day_floor_utc(ts: datetime) -> datetime:
+    """Normalize a datetime to 00:00:00 UTC."""
+    if ts.tzinfo is None:
+        ts = ts.replace(tzinfo=timezone.utc)
+    return ts.astimezone(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+
+
+def resolve_realtime_end_dt(now_utc: datetime, safety_lag_minutes: int) -> datetime:
+    """
+    Resolve realtime extraction end date as a UTC day anchor.
+
+    A safety lag prevents selecting an in-flight day near UTC midnight.
+    """
+    if safety_lag_minutes < 0:
+        raise ValueError("safety_lag_minutes must be >= 0")
+    return day_floor_utc(now_utc - timedelta(minutes=safety_lag_minutes))
+
+
+def resolve_symbol_start_for_realtime(
+    watermark: datetime | None,
+    *,
+    end_dt: datetime,
+    lookback_days: int,
+    interval: str,
+) -> datetime:
+    """
+    Resolve per-symbol realtime start date (UTC day anchor).
+
+    For intraday intervals, replay watermark day to backfill late/partial bars.
+    For daily interval, continue from next day to avoid unnecessary replay.
+    """
+    if lookback_days < 1:
+        raise ValueError("lookback_days must be >= 1")
+
+    if watermark is None:
+        return day_floor_utc(end_dt - timedelta(days=lookback_days))
+
+    wm_day = day_floor_utc(watermark)
+    if interval in {"1m", "1h"}:
+        return wm_day
+    if interval == "1d":
+        return wm_day + timedelta(days=1)
+    raise ValueError(f"Unsupported interval: {interval}")
 
 
 def fetch_pages_concurrently(
