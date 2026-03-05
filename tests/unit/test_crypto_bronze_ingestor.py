@@ -1,6 +1,7 @@
-import pytest
 from datetime import datetime, timezone
+
 from lakehouse.pipelines.crypto_bronze_ingestor import CryptoBronzeIngestor
+
 
 def test_resolve_days_to_fetch_backfill():
     ingestor = CryptoBronzeIngestor(spark=None, catalog="cat", schema="sch", table_name="tbl", api_client=None)

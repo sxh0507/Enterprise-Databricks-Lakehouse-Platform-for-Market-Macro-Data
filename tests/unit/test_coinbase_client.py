@@ -1,8 +1,10 @@
+from datetime import datetime, timezone
+
 import pytest
 import responses
-import requests
-from datetime import datetime, timezone
+
 from lakehouse.clients.coinbase import CoinbaseClient
+
 
 @pytest.fixture
 def client():

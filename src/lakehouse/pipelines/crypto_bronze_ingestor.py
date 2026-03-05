@@ -1,23 +1,22 @@
 import json
 import uuid
-from typing import List, Dict, Any, Optional
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
+from typing import Any, Dict, List, Optional
 
-from pyspark.sql import SparkSession, Row
+from pyspark.sql import Row, SparkSession
 from pyspark.sql import functions as F
 from pyspark.sql.types import (
-    StructType,
-    StructField,
     StringType,
+    StructField,
+    StructType,
     TimestampType,
 )
 
 from lakehouse.ingestion import (
-    resolve_realtime_end_dt,
-    resolve_symbol_start_for_realtime,
     fetch_pages_concurrently,
-    day_floor_utc
+    resolve_symbol_start_for_realtime,
 )
+
 
 class CryptoBronzeIngestor:
     """
