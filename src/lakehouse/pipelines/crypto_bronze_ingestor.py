@@ -31,13 +31,13 @@ class CryptoBronzeIngestor:
         schema: str,
         table_name: str,
         api_client: Any,
-        source_name: str = "coinbase"
+        source_name: str = "coinbase",
     ):
         self.spark = spark
         self.target_table = f"{catalog}.{schema}.{table_name}"
         self.api_client = api_client
         self.source_name = source_name
-    
+
     def _get_watermarks(self, symbols: List[str], interval: str) -> Dict[str, datetime]:
         """Fetch the latest event_time for each symbol to resume ingestion."""
         wm_by_symbol = {}
@@ -64,18 +64,20 @@ class CryptoBronzeIngestor:
         max_days: int,
         default_lookback_days: int,
         repair_start_date: Optional[datetime] = None,
-        repair_end_date: Optional[datetime] = None
+        repair_end_date: Optional[datetime] = None,
     ) -> Dict[str, List[datetime]]:
         """Determine exactly which days each symbol needs to fetch."""
-        
+
         days_by_symbol = {}
 
         if mode == "backfill":
             if not start_date:
                 raise ValueError("backfill mode requires start_date")
-            
+
             if end_date < start_date:
-                raise ValueError(f"end_date {end_date.date()} must be >= start_date {start_date.date()}")
+                raise ValueError(
+                    f"end_date {end_date.date()} must be >= start_date {start_date.date()}"
+                )
 
             num_days = (end_date.date() - start_date.date()).days + 1
             if num_days > max_days:
@@ -99,34 +101,38 @@ class CryptoBronzeIngestor:
                         lookback_days=default_lookback_days,
                         interval=interval,
                     )
-                    
+
                 if sym_start > end_date:
                     days_by_symbol[sym] = []
                     continue
 
                 req_days = (end_date.date() - sym_start.date()).days + 1
                 if req_days > max_days:
-                    raise ValueError(f"{sym}: requested {req_days} days exceeds limit of {max_days}.")
+                    raise ValueError(
+                        f"{sym}: requested {req_days} days exceeds limit of {max_days}."
+                    )
 
                 days_by_symbol[sym] = [sym_start + timedelta(days=i) for i in range(req_days)]
         else:
-             raise ValueError("mode must be 'backfill' or 'realtime'")
-        
+            raise ValueError("mode must be 'backfill' or 'realtime'")
+
         # Inject repair windows if specified
         if repair_start_date:
             repair_end = repair_end_date or end_date
             if repair_end < repair_start_date:
                 raise ValueError("repair_end_date must be >= repair_start_date")
-            
+
             repair_num_days = (repair_end.date() - repair_start_date.date()).days + 1
             repair_days = [repair_start_date + timedelta(days=i) for i in range(repair_num_days)]
 
             for sym in symbols:
                 merged = sorted(set(days_by_symbol.get(sym, []) + repair_days))
                 if len(merged) > max_days:
-                    raise ValueError(f"{sym}: merged repair days {len(merged)} exceeds max_days {max_days}.")
+                    raise ValueError(
+                        f"{sym}: merged repair days {len(merged)} exceeds max_days {max_days}."
+                    )
                 days_by_symbol[sym] = merged
-                
+
         return days_by_symbol
 
     def run(
@@ -140,13 +146,13 @@ class CryptoBronzeIngestor:
         default_lookback_days: int = 1,
         repair_start_date: Optional[datetime] = None,
         repair_end_date: Optional[datetime] = None,
-        max_workers: int = 4
+        max_workers: int = 4,
     ) -> Dict[str, Any]:
         """
         Executes the ingestion pipeline.
         Returns a summary dictionary with execution metrics.
         """
-        
+
         # 1. Resolve Extraction Window
         days_by_symbol = self._resolve_days_to_fetch(
             mode=mode,
@@ -157,11 +163,13 @@ class CryptoBronzeIngestor:
             max_days=max_days,
             default_lookback_days=default_lookback_days,
             repair_start_date=repair_start_date,
-            repair_end_date=repair_end_date
+            repair_end_date=repair_end_date,
         )
 
         total_days_to_fetch = sum(len(days) for days in days_by_symbol.values())
-        print(f"[INFO] Ingestor resolved total {total_days_to_fetch} symbol-day tasks across {len(symbols)} symbols.")
+        print(
+            f"[INFO] Ingestor resolved total {total_days_to_fetch} symbol-day tasks across {len(symbols)} symbols."
+        )
 
         if total_days_to_fetch == 0:
             return {"status": "skipped", "reason": "No new days to fetch", "rows_written": 0}
@@ -169,12 +177,12 @@ class CryptoBronzeIngestor:
         # 2. Extract Data Concurrently using injected API client
         all_pages = []
         all_errors = []
-        
+
         for sym in symbols:
             sym_days = days_by_symbol.get(sym, [])
             if not sym_days:
                 continue
-                
+
             print(f"[INFO] Fetching {sym} for {len(sym_days)} day(s)...")
             # We map backfill_klines_one_day from the client
             sym_pages, sym_errors = fetch_pages_concurrently(
@@ -205,32 +213,38 @@ class CryptoBronzeIngestor:
                 if kline_count <= 0:
                     skipped_empty += 1
                     continue
-                
-                kept_pages += 1
-                rows.append(Row(
-                    source=self.source_name,
-                    symbol=sym.upper(),
-                    interval=interval,
-                    event_time=day_start.replace(tzinfo=timezone.utc),
-                    raw_json=json.dumps(p, separators=(",", ":")),
-                    run_id=run_id,
-                    ingestion_ts=ingestion_ts
-                ))
 
-        print(f"[INFO] Bronze transformation: kept_pages={kept_pages}, skipped_empty={skipped_empty}, rows_to_write={len(rows)}")
+                kept_pages += 1
+                rows.append(
+                    Row(
+                        source=self.source_name,
+                        symbol=sym.upper(),
+                        interval=interval,
+                        event_time=day_start.replace(tzinfo=timezone.utc),
+                        raw_json=json.dumps(p, separators=(",", ":")),
+                        run_id=run_id,
+                        ingestion_ts=ingestion_ts,
+                    )
+                )
+
+        print(
+            f"[INFO] Bronze transformation: kept_pages={kept_pages}, skipped_empty={skipped_empty}, rows_to_write={len(rows)}"
+        )
 
         # 4. Load (Write to Delta Lake)
         if rows:
-            schema = StructType([
-                StructField("source", StringType(), False),
-                StructField("symbol", StringType(), False),
-                StructField("interval", StringType(), False),
-                StructField("event_time", TimestampType(), True),
-                StructField("raw_json", StringType(), False),
-                StructField("run_id", StringType(), False),
-                StructField("ingestion_ts", TimestampType(), False),
-            ])
-            
+            schema = StructType(
+                [
+                    StructField("source", StringType(), False),
+                    StructField("symbol", StringType(), False),
+                    StructField("interval", StringType(), False),
+                    StructField("event_time", TimestampType(), True),
+                    StructField("raw_json", StringType(), False),
+                    StructField("run_id", StringType(), False),
+                    StructField("ingestion_ts", TimestampType(), False),
+                ]
+            )
+
             # Ensure target table exists before writing
             self.spark.sql(f"""
             CREATE TABLE IF NOT EXISTS {self.target_table} (
@@ -246,15 +260,15 @@ class CryptoBronzeIngestor:
             """)
 
             df = self.spark.createDataFrame(rows, schema=schema).dropDuplicates()
-            
+
             # Upsert behavior (Append with potential dedup later on silver)
             df.write.mode("append").format("delta").saveAsTable(self.target_table)
-            
+
             return {
-                "status": "success", 
+                "status": "success",
                 "rows_written": len(rows),
                 "run_id": run_id,
-                "errors": len(all_errors)
+                "errors": len(all_errors),
             }
-        
+
         return {"status": "success", "rows_written": 0, "errors": len(all_errors)}

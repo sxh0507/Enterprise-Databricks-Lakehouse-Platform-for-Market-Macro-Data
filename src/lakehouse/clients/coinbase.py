@@ -7,7 +7,7 @@ import requests
 
 class CoinbaseClient:
     """Client for interacting with the Coinbase Exchange API."""
-    
+
     BASE_URL = "https://api.exchange.coinbase.com"
 
     def __init__(self, max_retries: int = 6, base_sleep: float = 1.0, sleep_ms: int = 250):
@@ -21,10 +21,12 @@ class CoinbaseClient:
             dt = dt.replace(tzinfo=timezone.utc)
         return dt.astimezone(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
-    def fetch_klines(self, symbol: str, interval: str, start_dt: datetime, end_dt: datetime) -> Dict[str, Any]:
+    def fetch_klines(
+        self, symbol: str, interval: str, start_dt: datetime, end_dt: datetime
+    ) -> Dict[str, Any]:
         """Fetch a single page of klines from Coinbase for a given time window."""
         product_id = symbol.replace("USDT", "-USD")
-        
+
         if interval == "1d":
             granularity = 86400
         elif interval == "1h":
@@ -38,7 +40,7 @@ class CoinbaseClient:
         params = {
             "start": self._iso_utc_z(start_dt),
             "end": self._iso_utc_z(end_dt),
-            "granularity": granularity
+            "granularity": granularity,
         }
         headers = {"User-Agent": "Mozilla/5.0", "Accept": "application/json"}
 
@@ -56,7 +58,7 @@ class CoinbaseClient:
                         "start_utc": params["start"],
                         "end_utc": params["end"],
                         "kline_count": len(kl),
-                        "klines": kl
+                        "klines": kl,
                     }
 
                 # Retry on 429 or 5xx Server Errors
@@ -72,14 +74,20 @@ class CoinbaseClient:
             if attempt < self.max_retries:
                 # Exponential backoff with jitter
                 sleep_s = self.base_sleep * (2 ** (attempt - 1)) + (0.1 * attempt)
-                print(f"[WARN] Coinbase retry {attempt}/{self.max_retries} after {sleep_s:.1f}s, last_err={last_err}")
+                print(
+                    f"[WARN] Coinbase retry {attempt}/{self.max_retries} after {sleep_s:.1f}s, last_err={last_err}"
+                )
                 time.sleep(sleep_s)
             else:
                 break
 
-        raise RuntimeError(f"Coinbase API failed after retries. symbol={symbol}, start={params['start']}, end={params['end']}, last_err={last_err}")
+        raise RuntimeError(
+            f"Coinbase API failed after retries. symbol={symbol}, start={params['start']}, end={params['end']}, last_err={last_err}"
+        )
 
-    def backfill_klines_one_day(self, symbol: str, interval: str, day_start: datetime) -> List[Dict[str, Any]]:
+    def backfill_klines_one_day(
+        self, symbol: str, interval: str, day_start: datetime
+    ) -> List[Dict[str, Any]]:
         """
         Fetch all pages of klines for a single day based on API limits.
         - 1m: 300 minutes per chunk (<=300 candles)
